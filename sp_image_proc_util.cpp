@@ -1,7 +1,7 @@
 #include "sp_image_proc_util.h"
 
 int** spGetRGBHist(char* str, int nBins) {
-
+	return 0;
 }
 
 double spRGBHistL2Distance(int** histA, int** histB, int nBins) {

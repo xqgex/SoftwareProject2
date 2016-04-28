@@ -5,7 +5,7 @@
 #include <opencv2/features2d.hpp>
 #include <vector>
 
-int main() {
+int main2() {
 	//Loading img - NOTE: Gray scale mode!
 	cv::Mat src;
 	src = cv::imread("baboon.png", CV_LOAD_IMAGE_GRAYSCALE);

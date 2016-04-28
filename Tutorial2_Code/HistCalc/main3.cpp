@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace cv;
 
-int main() {
+int main3() {
 	Mat src;
 
 	/// Load image

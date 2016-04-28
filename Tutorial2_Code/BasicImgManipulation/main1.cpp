@@ -3,7 +3,7 @@
 #include <opencv2/imgcodecs.hpp>//imread
 #include <cstdio>
 
-int main(){
+int main1(){
 	//img will hold the image we will load
 	cv::Mat img;
 	img = cv::imread("baboon.png",CV_LOAD_IMAGE_COLOR);

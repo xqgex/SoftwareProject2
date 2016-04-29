@@ -1,6 +1,14 @@
 #ifndef SP_IMAGE_PROC_UTIL_H_
 #define SP_IMAGE_PROC_UTIL_H_
-
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <opencv2/core.hpp>//Mat
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
+#include <opencv2/imgcodecs.hpp>//imread
+#include <opencv2/imgproc.hpp>//calcHist
+#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
 /*
  * Calculates the RGB channels histogram. The histogram will be stored in a

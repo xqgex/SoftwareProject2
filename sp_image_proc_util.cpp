@@ -3,7 +3,10 @@
 using namespace cv;
 
 int** spGetRGBHist(char* str, int nBins) {
-	int **rgb_hist = (int **)malloc(3 * nBins * sizeof(int));
+	int **rgb_hist = (int **)malloc(3 * sizeof(int*));
+	for (int i=0;i<3;i++){
+		rgb_hist[i] = (int *) malloc(nBins * sizeof(int));
+	}
 	Mat img;
 	img = imread(str, CV_LOAD_IMAGE_COLOR); // load the image with colors
 	if (img.empty()) {
@@ -41,7 +44,7 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 }
 
 double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
-	double **sif_Desc = (double **)malloc(maxNFeautres * 128 * sizeof(double));
+	double **sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
 	Mat img;
 	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // load the image in greyscale
 	if (img.empty()) {
@@ -55,6 +58,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	detect->compute(img, kp1, ds1); // compute Sifts
 
 	for (int i=0;i<maxNFeautres;i++) {
+		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
 		for (int j=0;j<128;j++) { // convert the Descriptors from Mat of floats to array of doubles
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}

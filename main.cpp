@@ -21,11 +21,12 @@
 int main(int argc, char *argv[]) {
 	// Input variable
 	int numberOfImages,nBins,maxNFeatures;
-	char dir[1025],prefix[1025],suffix[1025],queryImage[1025];
+	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4096];
 	// Program variable
 	int closestHist[5],closestSift[5]; // Five closest images
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
+	int *nFeaturesPerImage;
 	// Input
 	printf(IMGS_DIR_MSG);
 	fflush(stdout);
@@ -63,12 +64,15 @@ int main(int argc, char *argv[]) {
 	// Allocate memory
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
+	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
 	if ((arrayHist == NULL)or(arraySift == NULL)) {
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
 		//TODO free memory
 		//TODO terminate the program
 	}
+	//TODO memory allocation for the sub array carried out inside the calculation functions
+	/*
 	for (int i=0;i<numberOfImages;i++) {
 		arrayHist[i] = (int **)malloc(3 * sizeof(int*));
 		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*));
@@ -97,8 +101,14 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
-	calcArrayHist(arrayHist,numberOfImages,nBins,dir,prefix,suffix); // spGetRGBHist(char* str, int nBins)
-	calcArraySift(arraySift,numberOfImages,maxNFeatures,dir,prefix,suffix); // spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures)
+	*/
+	// Preproccessing
+	for (int i=0; i<numberOfImages;i++){
+		//TODO fix the path string
+		path = dir + prefix + i + suffix;
+		arrayHist[i] = spGetRGBHist(path,nBins);
+		arraySift[i] = spGetSiftDescriptors(path, maxNFeatures,&(nFeaturesPerImage[i]));
+	}
 	// Continue
 	printf(QUERY_IMG_MSG);
 	fflush(stdout);

@@ -7,6 +7,7 @@ int** spGetRGBHist(char* str, int nBins) {
 	for (int i=0;i<3;i++){
 		rgb_hist[i] = (int *) malloc(nBins * sizeof(int));
 	}
+	// TODO allocation failed
 	Mat img;
 	img = imread(str, CV_LOAD_IMAGE_COLOR); // load the image with colors
 	if (img.empty()) {
@@ -45,6 +46,7 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 
 double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	double **sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
+	// TODO allocation failed
 	Mat img;
 	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // load the image in greyscale
 	if (img.empty()) {
@@ -59,6 +61,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 
 	for (int i=0;i<maxNFeautres;i++) {
 		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
+		// TODO allocation failed
 		for (int j=0;j<128;j++) { // convert the Descriptors from Mat of floats to array of doubles
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}
@@ -80,6 +83,7 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** databaseFeatures, int numberOfImages, int* nFeaturesPerImage) {
 	int *bestMatches = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the index of the images of the best features
 	int *bestMatchesDist = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the distances of the best features
+	// TODO allocation failed
 	double featDist;
 	double minimalDist;
 	double featThreshold = 0;
@@ -132,6 +136,7 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 			temp = bestMatchesDist[i];
 			bestMatchesDist[i] = bestMatchesDist[featThresholdIndex];
 			bestMatchesDist[featThresholdIndex] = temp;
+			// TODO consider using of qsort instead
 		}
 	}
 	return bestMatches;

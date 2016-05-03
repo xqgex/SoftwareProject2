@@ -104,18 +104,17 @@ int main(int argc, char *argv[]) {
 	*/
 	// Preproccessing
 	for (int i=0; i<numberOfImages;i++){
-		//TODO fix the path string
-		path = dir + prefix + i + suffix;
+		snprintf(path, sizeof path, "%s%s%d%s", dir, prefix, i,suffix);
 		arrayHist[i] = spGetRGBHist(path,nBins);
 		arraySift[i] = spGetSiftDescriptors(path, maxNFeatures,&(nFeaturesPerImage[i]));
 	}
-	// Continue
+
 	printf(QUERY_IMG_MSG);
 	fflush(stdout);
 	scanf("%1024s",queryImage);
 	while (strcmp(queryImage, "#") != 0) {
 		calcDistHist(closestHist,numberOfImages,nBins,queryImage,arrayHist);
-		calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift);
+		calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift,nFeaturesPerImage);
 		printf(NEAREST_GLOBAL_MSG);
 		fflush(stdout);
 		printf("%d, %d, %d, %d, %d\n",closestHist[0],closestHist[1],closestHist[2],closestHist[3],closestHist[4]);

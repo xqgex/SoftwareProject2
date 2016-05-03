@@ -1,4 +1,5 @@
 #include "sp_image_proc_util.h"
+#include "main_aux.h"
 #define MAX_SIFT_DISTANCE 256*128
 using namespace cv;
 
@@ -56,7 +57,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	std::vector<cv::KeyPoint> kp1; // initialize detect's parameters
 	Mat ds1;
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
-	detect->detect(img, kp1, Mat()); // detect SIFTs
+	detect->detect(img, kp1, Mat()); // detect Sifts
 	detect->compute(img, kp1, ds1); // compute Sifts
 
 	for (int i=0;i<maxNFeautres;i++) {

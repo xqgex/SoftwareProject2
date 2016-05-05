@@ -1,9 +1,9 @@
 #include "main_aux.h"
 #include "sp_image_proc_util.h"
+#include <stdlib.h>
 
-void calcDistHist(int* retArray,int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
-	int** queryHist;
-
+void calcDistHist(int* retArray, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
+	int** queryHist; //FIXME "variable 'queryHist' set but not used"
 	queryHist = spGetRGBHist(queryImage, nBins);
 	for (int i=0;i<numberOfImages;i++){
 		//TODO finish this
@@ -11,13 +11,54 @@ void calcDistHist(int* retArray,int numberOfImages, int nBins, char* queryImage,
 	return;
 }
 
-void calcDistSift(int* retArray,int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift,int* nFeaturesPerImage) {
-
+void calcDistSift(int* retArray, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
 	//TODO complicated
-
 	return;
 }
 
+int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
+	int i,j;
+	for (i=0;i<numberOfImages;i++) {
+		arrayHist[i] = (int **)malloc(3 * sizeof(int*)); // [Image number][R/G/B][nBins]
+		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*)); // [Image number][nFeatures][128]
+		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) {
+			return 0;
+		}
+		for (j=0;j<3;j++) {
+			arrayHist[i][j] = (int *)malloc(nBins * sizeof(int)); // [Image number][R/G/B][nBins]
+			if (arrayHist[i][j] == NULL) {
+				return 0;
+			}
+		}
+		for (j=0;j<maxNFeatures;j++) {
+			arraySift[i][j] = (double *)malloc(128 * sizeof(double)); // [Image number][nFeatures][128]
+			if (arraySift[i][j] == NULL) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
+    int i,j;
+    for(i=0;i<numberOfImages;i++)
+    {
+        for(j=0;j<3;j++)
+        {
+                free(arrayHist[i][j]);
+        }
+        for(j=0;j<maxNFeatures;j++)
+        {
+                free(arraySift[i][j]);
+        }
+        free(arrayHist[i]);
+        free(arraySift[i]);
+    }
+    free(arrayHist);
+    free(arraySift);
+    free(nFeaturesPerImage);
+}
+/*
 void freeMemory(void* data, int dim){ // TODO test if it even works
 	// free memory blocks and multidimensional arrays of memory blocks
 	int length = sizeof(data)/sizeof(void*); // the size of all the pointers is always the same
@@ -30,3 +71,4 @@ void freeMemory(void* data, int dim){ // TODO test if it even works
 		free(data); // free the array
 	}
 }
+*/

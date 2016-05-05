@@ -1,8 +1,10 @@
 #include "main_aux.h"
 #include "sp_image_proc_util.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define PI 3.14
+#define PI 3.14 //XXX Is it safe to delete PI?
 #define IMGS_DIR_MSG "Enter images directory path:\n"
 #define IMGS_PREFIX_MSG "Enter images prefix:\n"
 #define NUM_IMGS_MSG "Enter number of images:\n"
@@ -21,9 +23,9 @@
 int main(int argc, char *argv[]) {
 	// Input variable
 	int numberOfImages,nBins,maxNFeatures;
-	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4096];
+	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
 	// Program variable
-	int closestHist[5],closestSift[5]; // Five closest images
+	int i,closestHist[5],closestSift[5]; // Five closest images
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
 	int *nFeaturesPerImage;
@@ -41,6 +43,8 @@ int main(int argc, char *argv[]) {
 		printf(ERROR_NUM_IMGS_MSG);
 		fflush(stdout);
 		//TODO free memory
+		//XXX Do we have such memory?
+		//TODO terminate the program
 	}
 	printf(IMGS_SUFFIX_MSG);
 	fflush(stdout);
@@ -52,6 +56,8 @@ int main(int argc, char *argv[]) {
 		printf(ERROR_NUM_BINS_MSG);
 		fflush(stdout);
 		//TODO free memory
+		//XXX Do we have such memory?
+		//TODO terminate the program
 	}
 	printf(NUM_FEATURES_MSG);
 	fflush(stdout);
@@ -60,55 +66,27 @@ int main(int argc, char *argv[]) {
 		printf(ERROR_NUM_FEATURES_MSG);
 		fflush(stdout);
 		//TODO free memory
+		//XXX Do we have such memory?
+		//TODO terminate the program
 	}
 	// Allocate memory
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
-	if ((arrayHist == NULL)or(arraySift == NULL)) {
+	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)or(arraysMemoryAllocation(arrayHist,arraySift,numberOfImages,maxNFeatures,nBins) == 0) ) {
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
-		//TODO free memory
+		//TODO free memory - Is it OK?
+		freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 		//TODO terminate the program
 	}
-	//TODO memory allocation for the sub array carried out inside the calculation functions
-	/*
-	for (int i=0;i<numberOfImages;i++) {
-		arrayHist[i] = (int **)malloc(3 * sizeof(int*));
-		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*));
-		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) {
-			printf(ERROR_ALLOCATION_MSG);
-			fflush(NULL);
-			//TODO free memory
-			//TODO terminate the program
-		}
-		for (int j=0;j<3;j++) {
-			arrayHist[i][j] = (int *)malloc(nBins * sizeof(int)); // [Image number][R/G/B][nBins]
-			if (arrayHist[i][j] == NULL) {
-				printf(ERROR_ALLOCATION_MSG);
-				fflush(NULL);
-				//TODO free memory
-				//TODO terminate the program
-			}
-		}
-		for (int j=0;j<maxNFeatures;j++) {
-			arraySift[i][j] = (double *)malloc(128 * sizeof(double)); // [Image number][nFeatures][128]
-			if (arraySift[i][j] == NULL) {
-				printf(ERROR_ALLOCATION_MSG);
-				fflush(NULL);
-				//TODO free memory
-				//TODO terminate the program
-			}
-		}
-	}
-	*/
 	// Preproccessing
-	for (int i=0; i<numberOfImages;i++){
+	for (i=0;i<numberOfImages;i++){
 		snprintf(path, sizeof path, "%s%s%d%s", dir, prefix, i,suffix);
-		arrayHist[i] = spGetRGBHist(path,nBins);
+		arrayHist[i] = spGetRGBHist(path,nBins); //FIXME This function crash the program
 		arraySift[i] = spGetSiftDescriptors(path, maxNFeatures,&(nFeaturesPerImage[i]));
 	}
-
+	// Start input loop
 	printf(QUERY_IMG_MSG);
 	fflush(stdout);
 	scanf("%1024s",queryImage);
@@ -124,13 +102,15 @@ int main(int argc, char *argv[]) {
 		printf("%d, %d, %d, %d, %d\n",closestSift[0],closestSift[1],closestSift[2],closestSift[3],closestSift[4]);
 		fflush(stdout);
 		//TODO free temp memory
+		//XXX Do we have such memory?
 		printf(QUERY_IMG_MSG);
 		fflush(stdout);
 		scanf("%1024s",queryImage);
 	}
 	printf(EXIT_MSG);
 	fflush(stdout);
-	//TODO free memory
+	//TODO free memory - Is it OK?
+	freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 	return 0;
 }
 

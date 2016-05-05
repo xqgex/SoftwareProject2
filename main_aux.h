@@ -5,6 +5,10 @@ void calcDistHist(int* retArray,int numberOfImages, int nBins, char* queryImage,
 
 void calcDistSift(int* retArray,int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift,int* nFeaturesPerImage);
 
-void freeMemory(void* data, int dim);
+int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins);
+
+void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures);
+
+//void freeMemory(void* data, int dim);
 
 #endif /* MAIN_AUX_H_ */

@@ -1,5 +1,15 @@
 #include "sp_image_proc_util.h"
 #include "main_aux.h"
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <opencv2/core.hpp>//Mat
+#include <opencv2/features2d.hpp>
+#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
+#include <opencv2/imgcodecs.hpp>//imread
+#include <opencv2/imgproc.hpp>//calcHist
+#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
+
 #define MAX_SIFT_DISTANCE 256*128
 using namespace cv;
 

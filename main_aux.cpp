@@ -26,6 +26,7 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 		}
  	}
 	freeMemoryDynamic(distanceArray,1, 0, 0);
+	freeMemoryDynamic(queryHist,2, 3, 0);
 	return 1;
  }
 
@@ -57,6 +58,7 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 		imageHitsArray[closestSift[i]] = 0;
 	}
 	freeMemoryDynamic(imageHitsArray,1, 0, 0);
+	freeMemoryDynamic(querySifts,2, maxNFeatures, 0);
 	return 1;
 }
 

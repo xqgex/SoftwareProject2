@@ -7,10 +7,10 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 	int** queryHist;
 	double distance, threshold;
 	double* distanceArray;
-	int i;
+	int i; // Generic loop variable
 	//
 	distanceArray = (double *)malloc(5 * sizeof(double));
- 	queryHist = spGetRGBHist(queryImage, nBins);
+ 	queryHist = spGetRGBHist(queryImage,nBins);
 	if ((queryHist == NULL)or(distanceArray == NULL)) { // Memory allocation error
 		return 0;
 	}
@@ -18,10 +18,10 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 	for (i=0;i<numberOfImages;i++) {
 		distance = spRGBHistL2Distance(queryHist, arrayHist[i], nBins);
 		if (i<5) {
-			threshold = addBestMatch(distanceArray, closestHist, i, distance, i);
+			threshold = addBestMatch(distanceArray,closestHist,i,distance,i);
 		} else {
 			if (distance < threshold) {
-				threshold = addBestMatch(distanceArray, closestHist, 4, distance, i);
+				threshold = addBestMatch(distanceArray,closestHist,4,distance,i);
 			}
 		}
  	}
@@ -30,30 +30,31 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
  }
 
 int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
+	//
+	int i,j; // Generic loop variables
 	double** querySifts;
 	int* imageHitsArray;
 	int* bestMatches;
-	int queryNFeatures, i,j, max;
-	imageHitsArray = (int *)malloc(numberOfImages * sizeof(int));
-	for (i=0;i<numberOfImages;i++){
-		imageHitsArray[i]=0;
-	}
-	querySifts = spGetSiftDescriptors(queryImage, maxNFeatures, &queryNFeatures);
-	for (i=0;i<queryNFeatures;i++){
-		bestMatches = spBestSIFTL2SquaredDistance(5, querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
-		for (j=0;j<5;j++){
+	int queryNFeatures, max;
+	//
+	imageHitsArray = (int *)calloc(numberOfImages,sizeof(int));
+	//
+	querySifts = spGetSiftDescriptors(queryImage,maxNFeatures,&queryNFeatures);
+	for (i=0;i<queryNFeatures;i++) {
+		bestMatches = spBestSIFTL2SquaredDistance(5,querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
+		for (j=0;j<5;j++) {
 			imageHitsArray[bestMatches[j]]++;
 		}
 	}
-	for (i=0;i<5;i++){
+	for (i=0;i<5;i++) {
 		max = 0;
-		for (j=0;j<numberOfImages;j++){
-			if (imageHitsArray[j] > max){
+		for (j=0;j<numberOfImages;j++) {
+			if (imageHitsArray[j] > max) {
 				max = imageHitsArray[j];
 				closestSift[i] = j;
 			}
 		}
-		imageHitsArray[closestSift[i]]=0;
+		imageHitsArray[closestSift[i]] = 0;
 	}
 	freeMemory(imageHitsArray,1, 0, 0);
 	return 1;
@@ -64,7 +65,7 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 	int tempI, i;
 	double tempD;
 	//
-	i=insertionPoint - 1;
+	i = insertionPoint - 1;
 	distanceArray[insertionPoint] = distance;
 	imageArray[insertionPoint] = imageNum;
 	while (distanceArray[i] > distance) {

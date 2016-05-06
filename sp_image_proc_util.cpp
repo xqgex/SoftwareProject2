@@ -84,7 +84,11 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
 	detect->detect(img, kp1, Mat()); // detect Sifts
 	detect->compute(img, kp1, ds1); // compute Sifts
-	for (i=0;i<maxNFeautres;i++) {
+	if (kp1.size()< maxNFeautres)
+		*nFeatures = kp1.size();
+	else
+		*nFeatures = maxNFeautres;
+	for (i=0;i<*nFeatures;i++) {
 		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
 		if (sif_Desc[i] == NULL) { // Memory allocation error
 			return NULL;

@@ -44,8 +44,30 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 	return distanceArray[insertionPoint]; // the new threshold
 }
 
-
-void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages) {
+int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
+	int i,j;
+	for (i=0;i<numberOfImages;i++) {
+		arrayHist[i] = (int **)malloc(3 * sizeof(int*)); // [Image number][R/G/B][nBins]
+		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*)); // [Image number][nFeatures][128]
+		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) {
+			return 0;
+		}
+		for (j=0;j<3;j++) {
+			arrayHist[i][j] = (int *)malloc(nBins * sizeof(int)); // [Image number][R/G/B][nBins]
+			if (arrayHist[i][j] == NULL) {
+				return 0;
+			}
+		}
+		for (j=0;j<maxNFeatures;j++) {
+			arraySift[i][j] = (double *)malloc(128 * sizeof(double)); // [Image number][nFeatures][128]
+			if (arraySift[i][j] == NULL) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
     int i,j;
     for(i=0;i<numberOfImages;i++)
     {
@@ -53,7 +75,7 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
         {
                 free(arrayHist[i][j]);
         }
-        for(j=0;j<nFeaturesPerImage[i];j++)
+        for(j=0;j<maxNFeatures;j++)
         {
                 free(arraySift[i][j]);
         }
@@ -63,7 +85,7 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     free(arrayHist);
     free(arraySift);
     free(nFeaturesPerImage);
-    return;
+
 }
 /*
 void freeMemory(void* data, int dim){ // TODO test if it even works

@@ -15,9 +15,9 @@ using namespace cv;
 int** spGetRGBHist(char* str, int nBins) {
 	// Function variables
 	int i; // Generic loop variable
-	float range[] = { 0, 256 };
-	const float* histRange = { range };
-	Mat img, b_hist, g_hist, r_hist;
+	float range[]={0,256};
+	const float* histRange={range};
+	Mat img,b_hist,g_hist,r_hist;
 	int **rgb_hist;
 	// Allocate memory
 	rgb_hist = (int **)malloc(3 * sizeof(int*));
@@ -50,9 +50,9 @@ int** spGetRGBHist(char* str, int nBins) {
 
 double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 	// Function variables
-	double L2Dist = 0;
-	int colorDist, binDist;
-	int i, j; // Generic loop variables
+	double L2Dist=0;
+	int colorDist,binDist;
+	int i,j; // Generic loop variables
 	// Calc distance
 	for (i=0;i<3;i++) {
 		colorDist = 0;
@@ -67,8 +67,8 @@ double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 
 double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	// Function variables
-	int i, j; // Generic loop variables
-	Mat img, ds1;
+	int i,j; // Generic loop variables
+	Mat img,ds1;
 	double **sif_Desc;
 	// Allocate memory
 	sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
@@ -100,7 +100,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 double spL2SquaredDistance(double* featureA, double* featureB) {
 	// Function variables
 	int i; // Generic loop variable
-	double L2Dist = 0, entry;
+	double L2Dist=0,entry;
 	// Calc squared distance
 	for (i=0;i<128;i++){
 		entry = featureA[i]-featureB[i]; //  calculate the difference SIFTs

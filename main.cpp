@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define PI 3.14 //XXX Is it safe to delete PI?
 #define IMGS_DIR_MSG "Enter images directory path:\n"
 #define IMGS_PREFIX_MSG "Enter images prefix:\n"
 #define NUM_IMGS_MSG "Enter number of images:\n"
@@ -21,10 +22,12 @@
 
 int main(int argc, char *argv[]) {
 	// Input variables
-	int numberOfImages,nBins,maxNFeatures,i;
+	int numberOfImages,nBins,maxNFeatures;
 	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
 	// Program variables
+	int i; // Generic loop variable
 	int closestHist[5],closestSift[5]; // Five closest images
+	int mallocDistHistSuccess,mallocDistSiftSuccess,mallocArraysSuccess; // Store True (1) if there wasn't memory allocation problem
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
 	int *nFeaturesPerImage;
@@ -75,8 +78,8 @@ int main(int argc, char *argv[]) {
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
-	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)) {
-
+	mallocArraysSuccess = arraysMemoryAllocation(arrayHist,arraySift,numberOfImages,maxNFeatures,nBins);
+	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)or(mallocArraysSuccess == 0) ) { // Memory allocation error
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
 		//TODO free memory - Is it OK?
@@ -93,7 +96,7 @@ int main(int argc, char *argv[]) {
 			printf(ERROR_ALLOCATION_MSG);
 			fflush(NULL);
 			//TODO free memory - Is it OK?
-			//freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
+			freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 			//TODO terminate the program
 			return (EXIT_FAILURE);
 		}

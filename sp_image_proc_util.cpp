@@ -10,6 +10,7 @@
 #include <opencv2/imgproc.hpp>//calcHist
 #include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
+#define MAX_SIFT_DISTANCE 256*128
 using namespace cv;
 
 int** spGetRGBHist(char* str, int nBins) {
@@ -111,33 +112,67 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** databaseFeatures, int numberOfImages, int* nFeaturesPerImage) {
 	// Function variables
-	int *bestMatches;
-	double *bestMatchesDist;
+	int i,j,k; // Generic loop variables
+	int *bestMatches,*bestMatchesDist;
 	double featDist;
 	double minimalDist;
-	double featThreshold;
+	double featThreshold=0;
+	int featThresholdIndex;
+	int resultCount=0;
+	int sortHelpVar; // Temporary variable for the sort
 	// Allocate memory
-
-	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // contain the index of the images of the best features
-	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // contain the distances of the best features
-	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) {
-		return 0;
+	bestMatches = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // Contain the index of the images of the best features
+	bestMatchesDist = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // Contain the distances of the best features
+	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) { // Memory allocation error
+		return NULL;
 	}
-	for (int i=0;i<numberOfImages;i++){
-		for (int j=0;j<nFeaturesPerImage[i];j++){
-			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // calculate the distance of any 2 features
-			if (featDist < minimalDist){
-				minimalDist = featDist; // save the minimal distance of each image
+	//
+	for (i=0;i<numberOfImages;i++){
+		minimalDist = MAX_SIFT_DISTANCE;
+		for (j=0;j<nFeaturesPerImage[i];j++) {
+			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // Calculate the distance of any 2 features
+			if (featDist < minimalDist) {
+				minimalDist = featDist; // Save the minimal distance of each image
 			}
 		}
-		// add new image to bestMatches list
-		if (i < bestNFeatures){ // check if we got less then bestNfeatures so far
-			featThreshold = addBestMatch(bestMatchesDist, bestMatches, i, minimalDist, i);
-		}
-		else{
-			if (minimalDist < featThreshold){ // check if the current image has better feature then the worse feature in the list
-				featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, minimalDist, i);
+		// Add new image to bestMatches list
+		if (resultCount < bestNFeatures) { // Check if we got less then bestNfeatures so far
+			bestMatches[resultCount] = i;
+			bestMatchesDist[resultCount] = minimalDist;
+			resultCount++;
+			if (minimalDist > featThreshold) { // Save the highest distance and his index in the bestMatches list
+				featThreshold = minimalDist;
+				featThresholdIndex = resultCount - 1;
 			}
+		} else {
+			if (minimalDist < featThreshold) { // Check if the current image has better feature then the worse feature in the list
+				bestMatches[featThresholdIndex] = i;
+				bestMatchesDist[featThresholdIndex] = minimalDist;
+				featThreshold = 0;
+				for (j=0;j<bestNFeatures;j++) { // Find the new threshold (highest distance in the bestMatch list)
+					if(featThreshold < bestMatchesDist[j]) {
+						featThresholdIndex = j;
+						featThreshold = bestMatchesDist[j];
+					}
+				}
+			}
+		}
+		// Sort the results in ascending order
+		for (j=0;j<resultCount;j++){
+			featThreshold = MAX_SIFT_DISTANCE;
+			for (k=j;k<resultCount;k++) { // Find the minimal distance from the remaining images
+				if (bestMatchesDist[k] < featThreshold) {
+					featThreshold = bestMatchesDist[k];
+					featThresholdIndex = k;
+				}
+			}
+			sortHelpVar = bestMatches[j]; // Move the minimal distance image to the right place
+			bestMatches[j] = bestMatches[featThresholdIndex];
+			bestMatches[featThresholdIndex] = sortHelpVar;
+			sortHelpVar = bestMatchesDist[j];
+			bestMatchesDist[j] = bestMatchesDist[featThresholdIndex];
+			bestMatchesDist[featThresholdIndex] = sortHelpVar;
+			// TODO Consider using of qsort instead
 		}
 	}
 	return bestMatches;

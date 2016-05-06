@@ -50,17 +50,17 @@ int** spGetRGBHist(char* str, int nBins) {
 
 double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 	// Function variables
-	double L2Dist=0;
-	double colorDist,binDist;
 	int i,j; // Generic loop variables
+	double binDist,colorDist; // Temp vars
+	double L2Dist=0; // The result that will be returned
 	// Calc distance
 	for (i=0;i<3;i++) {
 		colorDist = 0;
 		for (j=0;j<nBins;j++) {
-			binDist = (double)histA[i][j]-(double)histB[i][j]; // calculate the difference between bins
-			colorDist += binDist*binDist; // square the difference, and sum it up
+			binDist = (double)histA[i][j]-(double)histB[i][j]; // Calculate the difference between bins
+			colorDist += binDist*binDist; // Square the difference, and sum it up
 		}
-		L2Dist += 0.33*colorDist; // calculate the average of the 3 colors
+		L2Dist += 0.33*colorDist; // Calculate the average of the 3 colors
 	}
 	return L2Dist;
 }

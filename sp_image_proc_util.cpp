@@ -104,9 +104,9 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	int i; // Generic loop variable
 	double L2Dist=0,entry;
 	// Calc squared distance
-	for (i=0;i<128;i++){
-		entry = featureA[i]-featureB[i]; //  calculate the difference SIFTs
-		L2Dist += entry*entry; // square the result and sum it up
+	for (i=0;i<128;i++) {
+		entry = featureA[i]-featureB[i]; //  Calculate the difference SIFTs
+		L2Dist += entry*entry; // Square the result and sum it up
 	}
 	return L2Dist;
 }

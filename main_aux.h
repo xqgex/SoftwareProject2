@@ -7,7 +7,9 @@ void calcDistSift(int* retArray,int numberOfImages, int maxNFeatures, char* quer
 
 int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins);
 
-void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures);
+void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages);
+
+double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum);
 
 //void freeMemory(void* data, int dim);
 

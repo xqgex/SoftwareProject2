@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PI 3.14 //XXX Is it safe to delete PI?
 #define IMGS_DIR_MSG "Enter images directory path:\n"
 #define IMGS_PREFIX_MSG "Enter images prefix:\n"
 #define NUM_IMGS_MSG "Enter number of images:\n"
@@ -22,10 +21,10 @@
 
 int main(int argc, char *argv[]) {
 	// Input variables
-	int numberOfImages,nBins,maxNFeatures;
+	int numberOfImages,nBins,maxNFeatures,i;
 	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
 	// Program variables
-	int i,closestHist[5],closestSift[5]; // Five closest images
+	int closestHist[5],closestSift[5]; // Five closest images
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
 	int *nFeaturesPerImage;
@@ -42,9 +41,7 @@ int main(int argc, char *argv[]) {
 	if (numberOfImages<1) {
 		printf(ERROR_NUM_IMGS_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory?
-		//TODO terminate the program
+		return 0;
 	}
 	printf(IMGS_SUFFIX_MSG);
 	fflush(stdout);
@@ -55,9 +52,7 @@ int main(int argc, char *argv[]) {
 	if (nBins<1) {
 		printf(ERROR_NUM_BINS_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory?
-		//TODO terminate the program
+		return 0;
 	}
 	printf(NUM_FEATURES_MSG);
 	fflush(stdout);
@@ -65,20 +60,19 @@ int main(int argc, char *argv[]) {
 	if (maxNFeatures<1) {
 		printf(ERROR_NUM_FEATURES_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory?
-		//TODO terminate the program
+		return 0;
 	}
 	// Allocate memory
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
-	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)or(arraysMemoryAllocation(arrayHist,arraySift,numberOfImages,maxNFeatures,nBins) == 0) ) {
+	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)) {
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
-		//TODO free memory - Is it OK?
-		freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
-		//TODO terminate the program
+		if (arrayHist != NULL){free(arrayHist);}
+		if (arraySift != NULL){free(arraySift);}
+		if (nFeaturesPerImage != NULL){free(nFeaturesPerImage);}
+		return 0;
 	}
 	// Preproccessing
 	for (i=0;i<numberOfImages;i++){
@@ -110,7 +104,7 @@ int main(int argc, char *argv[]) {
 	printf(EXIT_MSG);
 	fflush(stdout);
 	//TODO free memory - Is it OK?
-	freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
+	freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages);
 	return 0;
 }
 

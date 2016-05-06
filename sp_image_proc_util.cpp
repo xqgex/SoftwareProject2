@@ -10,7 +10,6 @@
 #include <opencv2/imgproc.hpp>//calcHist
 #include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
-#define MAX_SIFT_DISTANCE 256*128
 using namespace cv;
 
 int** spGetRGBHist(char* str, int nBins) {
@@ -21,7 +20,7 @@ int** spGetRGBHist(char* str, int nBins) {
 	Mat img, b_hist, g_hist, r_hist;
 	int **rgb_hist;
 	// Allocate memory
-	**rgb_hist = (int **)malloc(3 * sizeof(int*));
+	rgb_hist = (int **)malloc(3 * sizeof(int*));
 	if (rgb_hist == NULL) {
 		return 0;
 	}
@@ -72,7 +71,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	Mat img, ds1;
 	double **sif_Desc;
 	// Allocate memory
-	**sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
+	sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
 	if (sif_Desc == NULL) {
 		return 0;
 	}
@@ -113,22 +112,17 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** databaseFeatures, int numberOfImages, int* nFeaturesPerImage) {
 	// Function variables
 	int *bestMatches;
-	int *bestMatchesDist;
+	double *bestMatchesDist;
 	double featDist;
 	double minimalDist;
-	double featThreshold = 0;
-	int featThresholdIndex;
-	int resultCount = 0;
-	int temp; // temp varible for the sort
+	double featThreshold;
 	// Allocate memory
-	*bestMatches = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the index of the images of the best features
-	*bestMatchesDist = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the distances of the best features
+	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // contain the index of the images of the best features
+	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // contain the distances of the best features
 	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) {
 		return 0;
 	}
-	//
 	for (int i=0;i<numberOfImages;i++){
-		minimalDist = MAX_SIFT_DISTANCE;
 		for (int j=0;j<nFeaturesPerImage[i];j++){
 			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // calculate the distance of any 2 features
 			if (featDist < minimalDist){
@@ -136,44 +130,13 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 			}
 		}
 		// add new image to bestMatches list
-		if (resultCount < bestNFeatures){ // check if we got less then bestNfeatures so far
-			bestMatches[resultCount] = i;
-			bestMatchesDist[resultCount] = minimalDist;
-			resultCount++;
-			if (minimalDist > featThreshold){ // save the highest distance and his index in the bestMatches list
-				featThreshold = minimalDist;
-				featThresholdIndex = resultCount - 1;
-			}
+		if (i < bestNFeatures){ // check if we got less then bestNfeatures so far
+			featThreshold = addBestMatch(bestMatchesDist, bestMatches, i, minimalDist, i);
 		}
 		else{
 			if (minimalDist < featThreshold){ // check if the current image has better feature then the worse feature in the list
-				bestMatches[featThresholdIndex] = i;
-				bestMatchesDist[featThresholdIndex] = minimalDist;
-				featThreshold = 0;
-				for (int k=0;k<bestNFeatures;k++){ // find the new threshold (highest distance in the bestMatch list)
-					if(featThreshold < bestMatchesDist[k]){
-						featThresholdIndex = k;
-						featThreshold = bestMatchesDist[k];
-					}
-				}
+				featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, minimalDist, i);
 			}
-		}
-		// sort the results in ascending order
-		for (int i=0;i<resultCount;i++){
-			featThreshold = MAX_SIFT_DISTANCE;
-			for (int j=i;j<resultCount;j++){ // find the minimal distance from the remaining images
-				if (bestMatchesDist[j] < featThreshold){
-					featThreshold = bestMatchesDist[j];
-					featThresholdIndex = j;
-				}
-			}
-			temp = bestMatches[i]; // move the minimal distance image to the right place
-			bestMatches[i] = bestMatches[featThresholdIndex];
-			bestMatches[featThresholdIndex] = temp;
-			temp = bestMatchesDist[i];
-			bestMatchesDist[i] = bestMatchesDist[featThresholdIndex];
-			bestMatchesDist[featThresholdIndex] = temp;
-			// TODO consider using of qsort instead
 		}
 	}
 	return bestMatches;

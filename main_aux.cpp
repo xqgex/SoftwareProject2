@@ -2,44 +2,52 @@
 #include "sp_image_proc_util.h"
 #include <stdlib.h>
 
-void calcDistHist(int* retArray, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
-	int** queryHist; //FIXME "variable 'queryHist' set but not used"
+void calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
+	int** queryHist;
+	double distance, threshold;
+	double * distanceArray;
+	int i;
+	closestHist = (int *)malloc(5 * sizeof(int));
+	distanceArray = (double *)malloc(5 * sizeof(double));
 	queryHist = spGetRGBHist(queryImage, nBins);
-	for (int i=0;i<numberOfImages;i++){
-		//TODO finish this
+	for (i=0;i<numberOfImages;i++){
+		distance = spRGBHistL2Distance(queryHist, arrayHist[i], nBins);
+		if (i<5){
+			threshold = addBestMatch(distanceArray, closestHist, i, distance, i);
+		}
+		else{
+			if (distance < threshold){
+				threshold = addBestMatch(distanceArray, closestHist, 4, distance, i);
+			}
+		}
 	}
-	return;
 }
 
-void calcDistSift(int* retArray, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
+void calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
 	//TODO complicated
 	return;
 }
 
-int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
-	int i,j;
-	for (i=0;i<numberOfImages;i++) {
-		arrayHist[i] = (int **)malloc(3 * sizeof(int*)); // [Image number][R/G/B][nBins]
-		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*)); // [Image number][nFeatures][128]
-		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) {
-			return 0;
-		}
-		for (j=0;j<3;j++) {
-			arrayHist[i][j] = (int *)malloc(nBins * sizeof(int)); // [Image number][R/G/B][nBins]
-			if (arrayHist[i][j] == NULL) {
-				return 0;
-			}
-		}
-		for (j=0;j<maxNFeatures;j++) {
-			arraySift[i][j] = (double *)malloc(128 * sizeof(double)); // [Image number][nFeatures][128]
-			if (arraySift[i][j] == NULL) {
-				return 0;
-			}
-		}
+double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum){
+	int tempI, i;
+	double tempD;
+	i=insertionPoint - 1;
+	distanceArray[insertionPoint] = distance;
+	imageArray[insertionPoint] = imageNum;
+	while (distanceArray[i] > distance){
+		tempD = distanceArray[i+1];
+		distanceArray[i+1] = distanceArray[i];
+		distanceArray[i] = tempD;
+		tempI = imageArray[i+1];
+		imageArray[i+1] = imageArray[i];
+		imageArray[i] = tempI;
+		i--;
 	}
-	return 1;
+	return distanceArray[insertionPoint]; // the new threshold
 }
-void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
+
+
+void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages) {
     int i,j;
     for(i=0;i<numberOfImages;i++)
     {
@@ -47,7 +55,7 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
         {
                 free(arrayHist[i][j]);
         }
-        for(j=0;j<maxNFeatures;j++)
+        for(j=0;j<nFeaturesPerImage[i];j++)
         {
                 free(arraySift[i][j]);
         }

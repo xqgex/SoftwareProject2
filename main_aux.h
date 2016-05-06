@@ -14,6 +14,12 @@ int calcDistHist(int* retArray,int numberOfImages, int nBins, char* queryImage, 
 int calcDistSift(int* retArray,int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift,int* nFeaturesPerImage);
 
 /**
+ *
+ * Return
+ */
+double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum);
+
+/**
  * Memory allocation for 'arrayHist' and 'arraySift'
  * Return True (1) if success and False (0) if not
  */

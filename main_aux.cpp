@@ -2,23 +2,57 @@
 #include "sp_image_proc_util.h"
 #include <stdlib.h>
 
-int calcDistHist(int* retArray, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
+int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
+	//
 	int** queryHist; //FIXME "variable 'queryHist' set but not used"
-	queryHist = spGetRGBHist(queryImage, nBins);
-	if (queryHist == NULL) { // Memory allocation error
+	double distance, threshold;
+	double* distanceArray;
+	int i;
+	//
+	closestHist = (int *)malloc(5 * sizeof(int));
+	distanceArray = (double *)malloc(5 * sizeof(double));
+ 	queryHist = spGetRGBHist(queryImage, nBins);
+	if ((queryHist == NULL)or(closestHist == NULL)or(distanceArray == NULL)) { // Memory allocation error
 		return 0;
 	}
-	for (int i=0;i<numberOfImages;i++){
-		//spRGBHistL2Distance(...)
-		//TODO finish this
-	}
+	//
+	for (i=0;i<numberOfImages;i++) {
+		distance = spRGBHistL2Distance(queryHist, arrayHist[i], nBins);
+		if (i<5) {
+			threshold = addBestMatch(distanceArray, closestHist, i, distance, i);
+		} else {
+			if (distance < threshold) {
+				threshold = addBestMatch(distanceArray, closestHist, 4, distance, i);
+			}
+		}
+ 	}
 	return 1;
-}
+ }
 
 int calcDistSift(int* retArray, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
 	//spBestSIFTL2SquaredDistance(...)
 	//TODO complicated
 	return 1;
+}
+
+double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum) {
+	//
+	int tempI, i;
+	double tempD;
+	//
+	i=insertionPoint - 1;
+	distanceArray[insertionPoint] = distance;
+	imageArray[insertionPoint] = imageNum;
+	while (distanceArray[i] > distance) {
+		tempD = distanceArray[i+1];
+		distanceArray[i+1] = distanceArray[i];
+		distanceArray[i] = tempD;
+		tempI = imageArray[i+1];
+		imageArray[i+1] = imageArray[i];
+		imageArray[i] = tempI;
+		i--;
+ 	}
+	return distanceArray[insertionPoint]; // the new threshold
 }
 
 int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {

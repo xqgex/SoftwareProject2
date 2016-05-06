@@ -25,7 +25,7 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 			}
 		}
  	}
-	free(distanceArray);
+	freeMemory(distanceArray,1, 0, 0);
 	return 1;
  }
 
@@ -55,7 +55,7 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 		}
 		imageHitsArray[closestSift[i]]=0;
 	}
-	free(imageHitsArray);
+	freeMemory(imageHitsArray,1, 0, 0);
 	return 1;
 }
 
@@ -78,7 +78,7 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
  	}
 	return distanceArray[insertionPoint]; // the new threshold
 }
-
+/*
 int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
 	int i,j;
 	for (i=0;i<numberOfImages;i++) {
@@ -102,6 +102,8 @@ int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfIm
 	}
 	return 1;
 }
+*/
+/*
 void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
     int i,j;
     for(i=0;i<numberOfImages;i++)
@@ -122,17 +124,22 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     free(nFeaturesPerImage);
     return;
 }
-/*
-void freeMemory(void* data, int dim){ // TODO test if it even works
-	// free memory blocks and multidimensional arrays of memory blocks
-	int length = sizeof(data)/sizeof(void*); // the size of all the pointers is always the same
+*/
+void freeMemory(void* data, int dim, int dim2length, int dim3length){
+	// free memory blocks and 2D\3D arrays of memory blocks
+	int i;
 	if (dim == 1) // single memory "block"
-		free(data);
-	else{  // array of pointers to lower dim array or single blocks
-		for (int i=0;i<length;i++){
-			freeMemory(((void**)data)[i],dim-1); // data is multidimensional array, free each element of the array
+		if (data != NULL)
+			free(data);
+	else{  // free 2D or 3D array
+		for (i=0;i<dim2length;i++){
+			if (((void**)data)[i] != NULL)
+				freeMemory(((void**)data)[i],dim-1,dim3length,0); // free sub array of D2 or single block
+			else
+				break; // if we have a NULL pointer, the rest of the array is undefined, so we have to stop
 		}
 		free(data); // free the array
 	}
 }
-*/
+
+

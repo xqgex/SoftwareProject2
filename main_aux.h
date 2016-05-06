@@ -29,8 +29,9 @@ int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfIm
  * Free arrays ('arrayHist', 'arraySift', 'nFeaturesPerImage') memory allocation
  * Return void
  */
+/*
 void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures);
-
-//void freeMemory(void* data, int dim);
+*/
+void freeMemory(void* data, int dim, int dim2length, int dim3length);
 
 #endif /* MAIN_AUX_H_ */

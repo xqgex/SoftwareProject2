@@ -93,7 +93,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}
 	}
-	*nFeatures = maxNFeautres;
+	*nFeatures = maxNFeautres;//TODO maxNfeatures never changes, it might be a problem
 	return sif_Desc;
 }
 
@@ -121,6 +121,8 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // contain the index of the images of the best features
 	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // contain the distances of the best features
 	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) {
+		freeMemory(bestMatches,1, 0, 0);
+		freeMemory(bestMatchesDist,1, 0, 0);
 		return NULL;
 	}
 	//
@@ -138,5 +140,6 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 			featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, minimalDist, i);
 		}
 	}
+	freeMemory(bestMatchesDist,1, 0, 0);
 	return bestMatches;
 }

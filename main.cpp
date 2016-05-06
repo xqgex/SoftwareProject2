@@ -45,9 +45,6 @@ int main(int argc, char *argv[]) {
 	if (numberOfImages<1) {
 		printf(ERROR_NUM_IMGS_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory? There wasn't any malloc...
-		//TODO terminate the program
 		return (EXIT_FAILURE);
 	}
 	printf(IMGS_SUFFIX_MSG);
@@ -59,9 +56,6 @@ int main(int argc, char *argv[]) {
 	if (nBins<1) {
 		printf(ERROR_NUM_BINS_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory? There wasn't any malloc...
-		//TODO terminate the program
 		return (EXIT_FAILURE);
 	}
 	printf(NUM_FEATURES_MSG);
@@ -70,35 +64,30 @@ int main(int argc, char *argv[]) {
 	if (maxNFeatures<1) {
 		printf(ERROR_NUM_FEATURES_MSG);
 		fflush(stdout);
-		//TODO free memory
-		//XXX Do we have such memory? There wasn't any malloc...
-		//TODO terminate the program
 		return (EXIT_FAILURE);
 	}
 	// Allocate memory
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
-	mallocArraysSuccess = arraysMemoryAllocation(arrayHist,arraySift,numberOfImages,maxNFeatures,nBins);
 	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)or(mallocArraysSuccess == 0) ) { // Memory allocation error
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
-		//TODO free memory - Is it OK?
-		freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
-		//TODO terminate the program
+		freeMemory(arrayHist, 3, numberOfImages, 3);
+		freeMemory(arraySift, 3, numberOfImages, maxNFeatures);
+		freeMemory(nFeaturesPerImage,1, 0, 0);
 		return (EXIT_FAILURE);
 	}
 	// Preproccessing
 	for (i=0;i<numberOfImages;i++){
 		snprintf(path, sizeof path, "%s%s%d%s", dir, prefix, i,suffix);
-		arrayHist[i] = spGetRGBHist(path,nBins); //FIXME This function crash the program
+		arrayHist[i] = spGetRGBHist(path,nBins);
 		arraySift[i] = spGetSiftDescriptors(path, maxNFeatures,&(nFeaturesPerImage[i]));
 		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) { // Memory allocation error
 			printf(ERROR_ALLOCATION_MSG);
 			fflush(NULL);
-			//TODO free memory - Is it OK?
-			freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
-			//TODO terminate the program
+			freeMemory(arrayHist, 3, numberOfImages, 3);
+			freeMemory(arraySift, 3, numberOfImages, maxNFeatures);
 			return (EXIT_FAILURE);
 		}
 	}
@@ -114,9 +103,11 @@ int main(int argc, char *argv[]) {
 		if ((mallocDistHistSuccess == 0)or(mallocDistSiftSuccess == 0)) { // Memory allocation error
 			printf(ERROR_ALLOCATION_MSG);
 			fflush(NULL);
-			//TODO free memory - Is it OK?
-			freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
-			//TODO terminate the program
+			freeMemory(arrayHist, 3, numberOfImages, 3);
+			freeMemory(arraySift, 3, numberOfImages, maxNFeatures);
+			freeMemory(nFeaturesPerImage,1, 0, 0);
+			freeMemory(closestHist,1, 0, 0);
+			freeMemory(closestSift,1, 0, 0);
 			return (EXIT_FAILURE);
 		}
 		printf(NEAREST_GLOBAL_MSG);
@@ -132,11 +123,14 @@ int main(int argc, char *argv[]) {
 		printf(QUERY_IMG_MSG);
 		fflush(stdout);
 		scanf("%1024s",queryImage);
+		freeMemory(closestHist,1, 0, 0);
+		freeMemory(closestSift,1, 0, 0);
 	}
 	printf(EXIT_MSG);
 	fflush(stdout);
-	//TODO free memory - Is it OK?
-	freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
+	freeMemory(arrayHist, 3, numberOfImages, 3);
+	freeMemory(arraySift, 3, numberOfImages, maxNFeatures);
+	freeMemory(nFeaturesPerImage,1, 0, 0);
 	return (EXIT_SUCCESS);
 }
 

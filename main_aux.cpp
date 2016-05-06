@@ -25,7 +25,7 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 			}
 		}
  	}
-	freeMemory(distanceArray,1, 0, 0);
+	freeMemoryDynamic(distanceArray,1, 0, 0);
 	return 1;
  }
 
@@ -56,7 +56,7 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 		}
 		imageHitsArray[closestSift[i]] = 0;
 	}
-	freeMemory(imageHitsArray,1, 0, 0);
+	freeMemoryDynamic(imageHitsArray,1, 0, 0);
 	return 1;
 }
 
@@ -79,42 +79,14 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
  	}
 	return distanceArray[insertionPoint]; // the new threshold
 }
-/*
-int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
-	int i,j;
-	for (i=0;i<numberOfImages;i++) {
-		arrayHist[i] = (int **)malloc(3 * sizeof(int*)); // [Image number][R/G/B][nBins]
-		arraySift[i] = (double **)malloc(maxNFeatures * sizeof(double*)); // [Image number][nFeatures][128]
-		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) {
-			return 0;
-		}
-		for (j=0;j<3;j++) {
-			arrayHist[i][j] = (int *)malloc(nBins * sizeof(int)); // [Image number][R/G/B][nBins]
-			if (arrayHist[i][j] == NULL) {
-				return 0;
-			}
-		}
-		for (j=0;j<maxNFeatures;j++) {
-			arraySift[i][j] = (double *)malloc(128 * sizeof(double)); // [Image number][nFeatures][128]
-			if (arraySift[i][j] == NULL) {
-				return 0;
-			}
-		}
-	}
-	return 1;
-}
-*/
-/*
+
 void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
     int i,j;
-    for(i=0;i<numberOfImages;i++)
-    {
-        for(j=0;j<3;j++)
-        {
+    for(i=0;i<numberOfImages;i++) {
+        for(j=0;j<3;j++) {
                 free(arrayHist[i][j]);
         }
-        for(j=0;j<maxNFeatures;j++)
-        {
+        for(j=0;j<maxNFeatures;j++) {
                 free(arraySift[i][j]);
         }
         free(arrayHist[i]);
@@ -125,21 +97,22 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     free(nFeaturesPerImage);
     return;
 }
-*/
-void freeMemory(void* data, int dim, int dim2length, int dim3length){
-	// free memory blocks and 2D\3D arrays of memory blocks
+
+void freeMemoryDynamic(void* data, int dim, int dim2length, int dim3length) {
 	int i;
-	if (dim == 1) // single memory "block"
-		if (data != NULL)
+	if (dim == 1) {// Single memory "block"
+		if (data != NULL) {
 			free(data);
-	else{  // free 2D or 3D array
-		for (i=0;i<dim2length;i++){
-			if (((void**)data)[i] != NULL)
-				freeMemory(((void**)data)[i],dim-1,dim3length,0); // free sub array of D2 or single block
-			else
-				break; // if we have a NULL pointer, the rest of the array is undefined, so we have to stop
 		}
-		free(data); // free the array
+	} else {  // Free 2D or 3D array
+		for (i=0;i<dim2length;i++) {
+			if (((void**)data)[i] != NULL) {
+				freeMemoryDynamic(((void**)data)[i],dim-1,dim3length,0); // Free sub array of D2 or single block
+			} else {
+				break; // If we have a NULL pointer, the rest of the array is undefined, so we have to stop
+			}
+		}
+		free(data); // Free the array
 	}
 }
 

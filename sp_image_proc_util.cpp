@@ -97,7 +97,6 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}
 	}
-	*nFeatures = maxNFeautres;//TODO maxNfeatures never changes, it might be a problem
 	return sif_Desc;
 }
 

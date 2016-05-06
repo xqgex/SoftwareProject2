@@ -11,7 +11,6 @@
 #include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
 using namespace cv;
-#define MAX_SIFT_DISTANCE 256*256*128
 int** spGetRGBHist(char* str, int nBins) {
 	// Function variables
 	int i; // Generic loop variable
@@ -115,8 +114,8 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** databaseFeatures, int numberOfImages, int* nFeaturesPerImage) {
 	// Function variables
 	int i,j; // Generic loop variables
+	int featCount=0;
 	double featDist;
-	double minimalDist;
 	double featThreshold;
 	int *bestMatches;
 	double *bestMatchesDist;
@@ -130,18 +129,15 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	}
 	//
 	for (i=0;i<numberOfImages;i++) {
-		minimalDist = MAX_SIFT_DISTANCE;
 		for (j=0;j<nFeaturesPerImage[i];j++) {
 			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // Calculate the distance of any 2 features
-			if (featDist < minimalDist) {
-				minimalDist = featDist; // Save the minimal distance of each image
+			// Add new feature to bestMatches list
+			if (featCount < bestNFeatures) { // Check if we got less then bestNfeatures so far
+				featThreshold = addBestMatch(bestMatchesDist, bestMatches, featCount, featDist, i);
+				featCount++;
+			} else if (featDist < featThreshold) { // Check if the current image has better feature then the worse feature in the list
+				featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, featDist, i);
 			}
-		}
-		// Add new image to bestMatches list
-		if (i < bestNFeatures) { // Check if we got less then bestNfeatures so far
-			featThreshold = addBestMatch(bestMatchesDist, bestMatches, i, minimalDist, i);
-		} else if (minimalDist < featThreshold) { // Check if the current image has better feature then the worse feature in the list
-			featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, minimalDist, i);
 		}
 	}
 	freeMemoryDynamic(bestMatchesDist,1, 0, 0);

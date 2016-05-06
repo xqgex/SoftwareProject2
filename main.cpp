@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
 	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)) {
+
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
 		if (arrayHist != NULL){free(arrayHist);}
@@ -79,14 +80,28 @@ int main(int argc, char *argv[]) {
 		snprintf(path, sizeof path, "%s%s%d%s", dir, prefix, i,suffix);
 		arrayHist[i] = spGetRGBHist(path,nBins); //FIXME This function crash the program
 		arraySift[i] = spGetSiftDescriptors(path, maxNFeatures,&(nFeaturesPerImage[i]));
+		if ((arrayHist[i] == NULL)or(arraySift[i] == NULL)) { // Memory allocation error
+			printf(ERROR_ALLOCATION_MSG);
+			fflush(NULL);
+			//TODO free memory - Is it OK?
+			//freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
+			//TODO terminate the program
+		}
 	}
 	// Start input loop
 	printf(QUERY_IMG_MSG);
 	fflush(stdout);
 	scanf("%1024s",queryImage);
 	while (strcmp(queryImage, "#") != 0) {
-		calcDistHist(closestHist,numberOfImages,nBins,queryImage,arrayHist);
-		calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift,nFeaturesPerImage);
+	//	mallocDistHistSuccess = calcDistHist(closestHist,numberOfImages,nBins,queryImage,arrayHist);
+	//	mallocDistSiftSuccess = calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift,nFeaturesPerImage);
+	//	if ((mallocDistHistSuccess == 0)or(mallocDistSiftSuccess == 0)) { // Memory allocation error
+	//		printf(ERROR_ALLOCATION_MSG);
+	//		fflush(NULL);
+	//		//TODO free memory - Is it OK?
+	//		freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
+	//		//TODO terminate the program
+	//	}
 		printf(NEAREST_GLOBAL_MSG);
 		fflush(stdout);
 		printf("%d, %d, %d, %d, %d\n",closestHist[0],closestHist[1],closestHist[2],closestHist[3],closestHist[4]);

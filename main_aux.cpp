@@ -2,6 +2,7 @@
 #include "sp_image_proc_util.h"
 #include <stdlib.h>
 
+
 void calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
 	int** queryHist;
 	double distance, threshold;
@@ -24,10 +25,7 @@ void calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIm
 }
 
 void calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
-	//TODO complicated
-	return;
 }
-
 double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum){
 	int tempI, i;
 	double tempD;
@@ -65,6 +63,7 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     free(arrayHist);
     free(arraySift);
     free(nFeaturesPerImage);
+    return;
 }
 /*
 void freeMemory(void* data, int dim){ // TODO test if it even works

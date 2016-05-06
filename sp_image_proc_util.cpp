@@ -21,20 +21,20 @@ int** spGetRGBHist(char* str, int nBins) {
 	Mat img, b_hist, g_hist, r_hist;
 	int **rgb_hist;
 	// Allocate memory
-	**rgb_hist = (int **)malloc(3 * sizeof(int*));
-	if (rgb_hist == NULL) {
-		return 0;
+	rgb_hist = (int **)malloc(3 * sizeof(int*));
+	if (rgb_hist == NULL) { // Memory allocation error
+		return NULL;
 	}
 	for (i=0;i<3;i++) {
 		rgb_hist[i] = (int *) malloc(nBins * sizeof(int));
-		if (rgb_hist[i] == NULL) {
-			return 0;
+		if (rgb_hist[i] == NULL) { // Memory allocation error
+			return NULL;
 		}
 	}
 	// Calc RGB hist
 	img = imread(str, CV_LOAD_IMAGE_COLOR); // load the image with colors
-	if (img.empty()) {
-		return 0;
+	if (img.empty()) { // Better be safe then sorry
+		return NULL;
 	}
 	std::vector<Mat> bgr_planes; // initialize calcHist parameters
 	split(img, bgr_planes);
@@ -72,14 +72,14 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	Mat img, ds1;
 	double **sif_Desc;
 	// Allocate memory
-	**sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
-	if (sif_Desc == NULL) {
-		return 0;
+	sif_Desc = (double **)malloc(maxNFeautres * sizeof(double *));
+	if (sif_Desc == NULL) { // Memory allocation error
+		return NULL;
 	}
 	// Calc sift descriptors
 	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // load the image in greyscale
-	if (img.empty()) {
-		return 0;
+	if (img.empty()) { // Better be safe then sorry
+		return NULL;
 	}
 	std::vector<cv::KeyPoint> kp1; // initialize detect's parameters
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
@@ -87,8 +87,8 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	detect->compute(img, kp1, ds1); // compute Sifts
 	for (i=0;i<maxNFeautres;i++) {
 		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
-		if (sif_Desc[i] == NULL) {
-			return 0;
+		if (sif_Desc[i] == NULL) { // Memory allocation error
+			return NULL;
 		}
 		for (j=0;j<128;j++) { // convert the Descriptors from Mat of floats to array of doubles
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
@@ -121,10 +121,10 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	int resultCount = 0;
 	int temp; // temp varible for the sort
 	// Allocate memory
-	*bestMatches = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the index of the images of the best features
-	*bestMatchesDist = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the distances of the best features
-	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) {
-		return 0;
+	bestMatches = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the index of the images of the best features
+	bestMatchesDist = (int *)malloc(bestNFeatures * 128 * sizeof(int)); // contain the distances of the best features
+	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) { // Memory allocation error
+		return NULL;
 	}
 	//
 	for (int i=0;i<numberOfImages;i++){

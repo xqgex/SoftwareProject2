@@ -2,18 +2,23 @@
 #include "sp_image_proc_util.h"
 #include <stdlib.h>
 
-void calcDistHist(int* retArray, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
+int calcDistHist(int* retArray, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
 	int** queryHist; //FIXME "variable 'queryHist' set but not used"
 	queryHist = spGetRGBHist(queryImage, nBins);
+	if (queryHist == NULL) { // Memory allocation error
+		return 0;
+	}
 	for (int i=0;i<numberOfImages;i++){
+		//spRGBHistL2Distance(...)
 		//TODO finish this
 	}
-	return;
+	return 1;
 }
 
-void calcDistSift(int* retArray, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
+int calcDistSift(int* retArray, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
+	//spBestSIFTL2SquaredDistance(...)
 	//TODO complicated
-	return;
+	return 1;
 }
 
 int arraysMemoryAllocation(int*** arrayHist, double*** arraySift, int numberOfImages, int maxNFeatures, int nBins) {
@@ -57,6 +62,7 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     free(arrayHist);
     free(arraySift);
     free(nFeaturesPerImage);
+    return;
 }
 /*
 void freeMemory(void* data, int dim){ // TODO test if it even works

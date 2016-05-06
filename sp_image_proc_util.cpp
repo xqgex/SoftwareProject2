@@ -16,8 +16,8 @@ int** spGetRGBHist(char* str, int nBins) {
 	// Function variables
 	int i; // Generic loop variable
 	float range[]={0,256};
-	const float* histRange={range};
 	Mat img,r_hist,g_hist,b_hist;
+	const float* histRange={range};
 	int **rgb_hist;
 	// Allocate memory
 	rgb_hist = (int **)malloc(3 * sizeof(int*));
@@ -76,24 +76,24 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 		return NULL;
 	}
 	// Calc sift descriptors
-	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // load the image in greyscale
+	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // Load the image in greyscale
 	if (img.empty()) { // Better be safe then sorry
 		return NULL;
 	}
-	std::vector<cv::KeyPoint> kp1; // initialize detect's parameters
+	std::vector<cv::KeyPoint> kp1; // Initialize detect's parameters
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
-	detect->detect(img, kp1, Mat()); // detect Sifts
-	detect->compute(img, kp1, ds1); // compute Sifts
-	if (kp1.size()< maxNFeautres)
-		*nFeatures = kp1.size();
-	else
-		*nFeatures = maxNFeautres;
-	for (i=0;i<*nFeatures;i++) {
-		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
+
+	detect->detect(img, kp1, Mat()); // Detect Sifts
+	detect->compute(img, kp1, ds1); // Compute Sifts
+	if (true) { // TODO Check for minimum between sizeof(ds1) and maxNFeautres
+		*nFeatures = maxNFeautres; // TODO Store that value at *nFeatures
+	}
+	for (i=0;i<maxNFeautres;i++) { // TODO change maxNFeautres
+		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // Memory allocation for each row
 		if (sif_Desc[i] == NULL) { // Memory allocation error
 			return NULL;
 		}
-		for (j=0;j<128;j++) { // convert the Descriptors from Mat of floats to array of doubles
+		for (j=0;j<128;j++) { // Convert the Descriptors from Mat of floats to array of doubles
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}
 	}
@@ -105,9 +105,9 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 	int i; // Generic loop variable
 	double L2Dist=0,entry;
 	// Calc squared distance
-	for (i=0;i<128;i++){
-		entry = featureA[i]-featureB[i]; //  calculate the difference SIFTs
-		L2Dist += entry*entry; // square the result and sum it up
+	for (i=0;i<128;i++) {
+		entry = featureA[i]-featureB[i]; //  Calculate the difference SIFTs
+		L2Dist += entry*entry; // Square the result and sum it up
 	}
 	return L2Dist;
 }
@@ -115,14 +115,14 @@ double spL2SquaredDistance(double* featureA, double* featureB) {
 int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** databaseFeatures, int numberOfImages, int* nFeaturesPerImage) {
 	// Function variables
 	int i,j; // Generic loop variables
-	int *bestMatches;
-	double *bestMatchesDist;
 	double featDist;
 	double minimalDist;
 	double featThreshold;
+	int *bestMatches;
+	double *bestMatchesDist;
 	// Allocate memory
-	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // contain the index of the images of the best features
-	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // contain the distances of the best features
+	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // Contain the index of the images of the best features
+	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // Contain the distances of the best features
 	if ((bestMatches == NULL)or(bestMatchesDist == NULL)) {
 		freeMemoryDynamic(bestMatches,1, 0, 0);
 		freeMemoryDynamic(bestMatchesDist,1, 0, 0);
@@ -132,15 +132,15 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	for (i=0;i<numberOfImages;i++) {
 		minimalDist = MAX_SIFT_DISTANCE;
 		for (j=0;j<nFeaturesPerImage[i];j++) {
-			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // calculate the distance of any 2 features
+			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // Calculate the distance of any 2 features
 			if (featDist < minimalDist) {
-				minimalDist = featDist; // save the minimal distance of each image
+				minimalDist = featDist; // Save the minimal distance of each image
 			}
 		}
-		// add new image to bestMatches list
-		if (i < bestNFeatures) { // check if we got less then bestNfeatures so far
+		// Add new image to bestMatches list
+		if (i < bestNFeatures) { // Check if we got less then bestNfeatures so far
 			featThreshold = addBestMatch(bestMatchesDist, bestMatches, i, minimalDist, i);
-		} else if (minimalDist < featThreshold) { // check if the current image has better feature then the worse feature in the list
+		} else if (minimalDist < featThreshold) { // Check if the current image has better feature then the worse feature in the list
 			featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, minimalDist, i);
 		}
 	}

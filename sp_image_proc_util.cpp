@@ -76,24 +76,26 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 		return NULL;
 	}
 	// Calc sift descriptors
-	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // load the image in greyscale
+	img = imread(str, CV_LOAD_IMAGE_GRAYSCALE); // Load the image in greyscale
 	if (img.empty()) { // Better be safe then sorry
 		return NULL;
 	}
-	std::vector<cv::KeyPoint> kp1; // initialize detect's parameters
+	std::vector<cv::KeyPoint> kp1; // Initialize detect's parameters
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
-	detect->detect(img, kp1, Mat()); // detect Sifts
-	detect->compute(img, kp1, ds1); // compute Sifts
+	detect->detect(img, kp1, Mat()); // Detect Sifts
+	detect->compute(img, kp1, ds1); // Compute Sifts
+	if (true) {
+		*nFeatures = maxNFeautres;
+	}
 	for (i=0;i<maxNFeautres;i++) {
-		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // memory allocation for each row
+		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // Memory allocation for each row
 		if (sif_Desc[i] == NULL) { // Memory allocation error
 			return NULL;
 		}
-		for (j=0;j<128;j++) { // convert the Descriptors from Mat of floats to array of doubles
+		for (j=0;j<128;j++) { // Convert the Descriptors from Mat of floats to array of doubles
 			sif_Desc[i][j]=(double)ds1.at<float>(i,j);
 		}
 	}
-	*nFeatures = maxNFeautres;//TODO maxNfeatures never changes, it might be a problem
 	return sif_Desc;
 }
 

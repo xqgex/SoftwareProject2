@@ -32,6 +32,7 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
 	double** querySifts;
 	int* imageHitsArray;
+	int* bestMatches;
 	int queryNFeatures, i,j, max;
 	imageHitsArray = (int *)malloc(numberOfImages * sizeof(int));
 	for (i=0;i<numberOfImages;i++){
@@ -39,21 +40,22 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 	}
 	querySifts = spGetSiftDescriptors(queryImage, maxNFeatures, &queryNFeatures);
 	for (i=0;i<queryNFeatures;i++){
-		closestSift = spBestSIFTL2SquaredDistance(5, querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
+		bestMatches = spBestSIFTL2SquaredDistance(5, querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
 		for (j=0;j<5;j++){
-			imageHitsArray[closestSift[j]]++;
+			imageHitsArray[bestMatches[j]]++;
 		}
 	}
 	for (i=0;i<5;i++){
 		max = 0;
 		for (j=0;j<numberOfImages;j++){
 			if (imageHitsArray[j] > max){
-				max = j;
+				max = imageHitsArray[j];
+				closestSift[i] = j;
 			}
 		}
-		closestSift[i] = max;
-		imageHitsArray[max]=0;
+		imageHitsArray[closestSift[i]]=0;
 	}
+	free(imageHitsArray);
 	return 1;
 }
 

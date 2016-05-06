@@ -26,7 +26,8 @@ int main(int argc, char *argv[]) {
 	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
 	// Program variables
 	int i; // Generic loop variable
-	int closestHist[5],closestSift[5]; // Five closest images
+	int* closestHist;
+	int* closestSift;
 	int mallocDistHistSuccess,mallocDistSiftSuccess,mallocArraysSuccess; // Store True (1) if there wasn't memory allocation problem
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]

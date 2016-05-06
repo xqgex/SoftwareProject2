@@ -26,9 +26,7 @@ int main(int argc, char *argv[]) {
 	// Program variables
 	int i; // Generic loop variable
 	int closestHist[5],closestSift[5]; // Five closest images
-	//int* closestHist; //XXX
-	//int* closestSift; //XXX
-	int mallocDistHistSuccess,mallocDistSiftSuccess,mallocArraysSuccess; // Store True (1) if there wasn't memory allocation problem
+	int mallocDistHistSuccess,mallocDistSiftSuccess; // Store True (1) if there wasn't memory allocation problem
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
 	int *nFeaturesPerImage;
@@ -70,7 +68,7 @@ int main(int argc, char *argv[]) {
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
 	arraySift = (double ***)malloc(numberOfImages * sizeof(double**));
 	nFeaturesPerImage = (int *)malloc(numberOfImages * sizeof(int));
-	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL)or(mallocArraysSuccess == 0) ) { // Memory allocation error
+	if ( (arrayHist == NULL)or(arraySift == NULL)or(nFeaturesPerImage == NULL) ) { // Memory allocation error
 		printf(ERROR_ALLOCATION_MSG);
 		fflush(NULL);
 		freeMemory(arrayHist,3,numberOfImages,3);
@@ -96,8 +94,6 @@ int main(int argc, char *argv[]) {
 	fflush(stdout);
 	scanf("%1024s",queryImage);
 	while (strcmp(queryImage,"#") != 0) {
-		//closestHist = (int *)malloc(5 * sizeof(int)); //XXX
-		//closestSift = (int *)malloc(5 * sizeof(int)); //XXX
 		mallocDistHistSuccess = calcDistHist(closestHist,numberOfImages,nBins,queryImage,arrayHist);
 		mallocDistSiftSuccess = calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift,nFeaturesPerImage);
 		if ((mallocDistHistSuccess == 0)or(mallocDistSiftSuccess == 0)) { // Memory allocation error
@@ -106,8 +102,6 @@ int main(int argc, char *argv[]) {
 			freeMemory(arrayHist,3,numberOfImages,3);
 			freeMemory(arraySift,3,numberOfImages,maxNFeatures);
 			freeMemory(nFeaturesPerImage,1,0,0);
-			//freeMemory(closestHist,1,0,0); //XXX
-			//freeMemory(closestSift,1,0,0); //XXX
 			return (EXIT_FAILURE);
 		}
 		printf(NEAREST_GLOBAL_MSG);
@@ -123,8 +117,6 @@ int main(int argc, char *argv[]) {
 		printf(QUERY_IMG_MSG);
 		fflush(stdout);
 		scanf("%1024s",queryImage);
-		//freeMemory(closestHist,1,0,0); //XXX
-		//freeMemory(closestSift,1,0,0); //XXX
 	}
 	printf(EXIT_MSG);
 	fflush(stdout);

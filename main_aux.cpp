@@ -68,7 +68,7 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 	i = insertionPoint - 1;
 	distanceArray[insertionPoint] = distance;
 	imageArray[insertionPoint] = imageNum;
-	while (distanceArray[i] > distance) {
+	while ((i>=0) and (distanceArray[i] > distance)) {
 		tempD = distanceArray[i+1];
 		distanceArray[i+1] = distanceArray[i];
 		distanceArray[i] = tempD;

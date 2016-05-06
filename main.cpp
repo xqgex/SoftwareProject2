@@ -21,10 +21,10 @@
 #define ERROR_ALLOCATION_MSG "An error occurred - allocation failure\n"
 
 int main(int argc, char *argv[]) {
-	// Input variable
+	// Input variables
 	int numberOfImages,nBins,maxNFeatures;
 	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
-	// Program variable
+	// Program variables
 	int i,closestHist[5],closestSift[5]; // Five closest images
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]

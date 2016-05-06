@@ -4,10 +4,10 @@
 
 int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
 	//
-	int** queryHist;
+	int i; // Generic loop variable
 	double distance, threshold;
 	double* distanceArray;
-	int i; // Generic loop variable
+	int** queryHist;
 	//
 	distanceArray = (double *)malloc(5 * sizeof(double));
  	queryHist = spGetRGBHist(queryImage,nBins);
@@ -33,10 +33,10 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
 	//
 	int i,j; // Generic loop variables
-	double** querySifts;
+	int queryNFeatures, max;
 	int* imageHitsArray;
 	int* bestMatches;
-	int queryNFeatures, max;
+	double** querySifts;
 	//
 	imageHitsArray = (int *)calloc(numberOfImages,sizeof(int));
 	//
@@ -83,6 +83,7 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 }
 
 void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
+	// FIXME Add a check that var is not NULL before trying to access him
     int i,j;
     for(i=0;i<numberOfImages;i++) {
         for(j=0;j<3;j++) {

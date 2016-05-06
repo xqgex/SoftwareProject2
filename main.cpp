@@ -106,6 +106,8 @@ int main(int argc, char *argv[]) {
 	fflush(stdout);
 	scanf("%1024s",queryImage);
 	while (strcmp(queryImage, "#") != 0) {
+		closestHist = (int *)malloc(5 * sizeof(int));
+		closestSift = (int *)malloc(5 * sizeof(int));
 		mallocDistHistSuccess = calcDistHist(closestHist,numberOfImages,nBins,queryImage,arrayHist);
 		mallocDistSiftSuccess = calcDistSift(closestSift,numberOfImages,maxNFeatures,queryImage,arraySift,nFeaturesPerImage);
 		if ((mallocDistHistSuccess == 0)or(mallocDistSiftSuccess == 0)) { // Memory allocation error

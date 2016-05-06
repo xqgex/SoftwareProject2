@@ -9,10 +9,9 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 	double* distanceArray;
 	int i;
 	//
-	closestHist = (int *)malloc(5 * sizeof(int));
 	distanceArray = (double *)malloc(5 * sizeof(double));
  	queryHist = spGetRGBHist(queryImage, nBins);
-	if ((queryHist == NULL)or(closestHist == NULL)or(distanceArray == NULL)) { // Memory allocation error
+	if ((queryHist == NULL)or(distanceArray == NULL)) { // Memory allocation error
 		return 0;
 	}
 	//
@@ -26,6 +25,7 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 			}
 		}
  	}
+	free(distanceArray);
 	return 1;
  }
 

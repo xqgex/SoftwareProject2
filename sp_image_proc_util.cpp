@@ -10,7 +10,6 @@
 #include <opencv2/imgproc.hpp>//calcHist
 #include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
-#define MAX_SIFT_DISTANCE 256*128
 using namespace cv;
 
 int** spGetRGBHist(char* str, int nBins) {
@@ -52,14 +51,14 @@ int** spGetRGBHist(char* str, int nBins) {
 double spRGBHistL2Distance(int** histA, int** histB, int nBins) {
 	// Function variables
 	double L2Dist=0;
-	int colorDist,binDist;
+	double colorDist,binDist;
 	int i,j; // Generic loop variables
 	// Calc distance
 	for (i=0;i<3;i++) {
 		colorDist = 0;
 		for (j=0;j<nBins;j++) {
-			binDist = histA[i][j]-histB[i][j]; // calculate the difference between bins
-			colorDist += binDist*binDist; // square the differnce, and sum it up
+			binDist = (double)histA[i][j]-(double)histB[i][j]; // calculate the difference between bins
+			colorDist += binDist*binDist; // square the difference, and sum it up
 		}
 		L2Dist += 0.33*colorDist; // calculate the average of the 3 colors
 	}
@@ -118,9 +117,6 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	double featDist;
 	double minimalDist;
 	double featThreshold;
-	//int featThresholdIndex;
-	//int resultCount=0;
-	//int sortHelpVar; // Temporary variable for the sort
 	// Allocate memory
 	bestMatches = (int *)malloc(bestNFeatures * sizeof(int)); // contain the index of the images of the best features
 	bestMatchesDist = (double *)malloc(bestNFeatures * sizeof(double)); // contain the distances of the best features

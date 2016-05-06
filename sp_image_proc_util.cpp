@@ -11,7 +11,7 @@
 #include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
 
 using namespace cv;
-
+#define MAX_SIFT_DISTANCE 256*256*128
 int** spGetRGBHist(char* str, int nBins) {
 	// Function variables
 	int i; // Generic loop variable
@@ -127,6 +127,7 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 	}
 	//
 	for (i=0;i<numberOfImages;i++) {
+		minimalDist = MAX_SIFT_DISTANCE;
 		for (j=0;j<nFeaturesPerImage[i];j++) {
 			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // calculate the distance of any 2 features
 			if (featDist < minimalDist) {

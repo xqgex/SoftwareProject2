@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
 		//TODO free memory
 		//XXX Do we have such memory? There wasn't any malloc...
 		//TODO terminate the program
+		return (EXIT_FAILURE);
 	}
 	printf(IMGS_SUFFIX_MSG);
 	fflush(stdout);
@@ -60,6 +61,7 @@ int main(int argc, char *argv[]) {
 		//TODO free memory
 		//XXX Do we have such memory? There wasn't any malloc...
 		//TODO terminate the program
+		return (EXIT_FAILURE);
 	}
 	printf(NUM_FEATURES_MSG);
 	fflush(stdout);
@@ -70,6 +72,7 @@ int main(int argc, char *argv[]) {
 		//TODO free memory
 		//XXX Do we have such memory? There wasn't any malloc...
 		//TODO terminate the program
+		return (EXIT_FAILURE);
 	}
 	// Allocate memory
 	arrayHist = (int ***)malloc(numberOfImages * sizeof(int**));
@@ -82,6 +85,7 @@ int main(int argc, char *argv[]) {
 		//TODO free memory - Is it OK?
 		freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 		//TODO terminate the program
+		return (EXIT_FAILURE);
 	}
 	// Preproccessing
 	for (i=0;i<numberOfImages;i++){
@@ -94,6 +98,7 @@ int main(int argc, char *argv[]) {
 			//TODO free memory - Is it OK?
 			freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 			//TODO terminate the program
+			return (EXIT_FAILURE);
 		}
 	}
 	// Start input loop
@@ -109,6 +114,7 @@ int main(int argc, char *argv[]) {
 			//TODO free memory - Is it OK?
 			freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
 			//TODO terminate the program
+			return (EXIT_FAILURE);
 		}
 		printf(NEAREST_GLOBAL_MSG);
 		fflush(stdout);
@@ -128,7 +134,7 @@ int main(int argc, char *argv[]) {
 	fflush(stdout);
 	//TODO free memory - Is it OK?
 	freeMemory(arrayHist, arraySift, nFeaturesPerImage, numberOfImages, maxNFeatures);
-	return 0;
+	return (EXIT_SUCCESS);
 }
 
 

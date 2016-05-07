@@ -30,15 +30,15 @@ int** spGetRGBHist(char* str, int nBins) {
 		}
 	}
 	// Calc RGB hist
-	img = imread(str, CV_LOAD_IMAGE_COLOR); // Load the image with colors
+	img = imread(str,CV_LOAD_IMAGE_COLOR); // Load the image with colors
 	if (img.empty()) { // Better be safe then sorry
 		return NULL;
 	}
 	std::vector<Mat> bgr_planes; // Initialize calcHist parameters
 	split(img, bgr_planes);
-	calcHist(&bgr_planes[2], 1, 0, Mat(), r_hist, 1, &nBins, &histRange,true,false); // Calculate red histograms
-	calcHist(&bgr_planes[1], 1, 0, Mat(), g_hist, 1, &nBins, &histRange,true,false); // Calculate green histograms
-	calcHist(&bgr_planes[0], 1, 0, Mat(), b_hist, 1, &nBins, &histRange,true,false); // Calculate blue histograms
+	calcHist(&bgr_planes[2],1,0,Mat(),r_hist,1,&nBins,&histRange,true,false); // Calculate red histograms
+	calcHist(&bgr_planes[1],1,0,Mat(),g_hist,1,&nBins,&histRange,true,false); // Calculate green histograms
+	calcHist(&bgr_planes[0],1,0,Mat(),b_hist,1,&nBins,&histRange,true,false); // Calculate blue histograms
 	for (i=0;i<nBins;i++) { // Convert the histograms from Mat of floats to array of ints
 		rgb_hist[0][i] = (int)r_hist.at<float>(i);
 		rgb_hist[1][i] = (int)g_hist.at<float>(i);
@@ -82,8 +82,8 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 	std::vector<cv::KeyPoint> kp1; // Initialize detect's parameters
 	Ptr<xfeatures2d::SiftDescriptorExtractor> detect = xfeatures2d::SIFT::create(maxNFeautres);
 
-	detect->detect(img, kp1, Mat()); // Detect Sifts
-	detect->compute(img, kp1, ds1); // Compute Sifts
+	detect->detect(img,kp1,Mat()); // Detect Sifts
+	detect->compute(img,kp1,ds1); // Compute Sifts
 	if (kp1.size() < maxNFeautres) {
 		*nFeatures = kp1.size();
 	} else {
@@ -129,16 +129,16 @@ int* spBestSIFTL2SquaredDistance(int bestNFeatures, double* featureA, double*** 
 		freeMemoryDynamic(bestMatchesDist,1, 0, 0);
 		return NULL;
 	}
-	//
+	//Now calc the distance
 	for (i=0;i<numberOfImages;i++) {
 		for (j=0;j<nFeaturesPerImage[i];j++) {
 			featDist = spL2SquaredDistance(featureA,databaseFeatures[i][j]); // Calculate the distance of any 2 features
 			// Add new feature to bestMatches list
 			if (featCount < bestNFeatures) { // Check if we got less then bestNfeatures so far
-				featThreshold = addBestMatch(bestMatchesDist, bestMatches, featCount, featDist, i);
+				featThreshold = addBestMatch(bestMatchesDist,bestMatches,featCount,featDist,i);
 				featCount++;
 			} else if (featDist < featThreshold) { // Check if the current image has better feature then the worse feature in the list
-				featThreshold = addBestMatch(bestMatchesDist, bestMatches, bestNFeatures-1, featDist, i);
+				featThreshold = addBestMatch(bestMatchesDist,bestMatches,bestNFeatures-1,featDist,i);
 			}
 		}
 	}

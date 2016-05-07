@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
 	int i; // Generic loop variable
 	int closestHist[5],closestSift[5]; // Five closest images
 	int mallocDistHistSuccess,mallocDistSiftSuccess; // Store True (1) if there wasn't memory allocation problem
+	int *nFeaturesPerImage;
 	int ***arrayHist; // arrayHist = [Image number][R/G/B][nBins]
 	double ***arraySift; // arraySift = [Image number][nFeatures][128]
-	int *nFeaturesPerImage;
 	// Input
 	printf(IMGS_DIR_MSG);
 	fflush(stdout);
@@ -107,8 +107,6 @@ int main(int argc, char *argv[]) {
 		fflush(stdout);
 		printf("%d, %d, %d, %d, %d\n",closestSift[0],closestSift[1],closestSift[2],closestSift[3],closestSift[4]);
 		fflush(stdout);
-		//TODO free temp memory
-		//XXX Do we have such memory?
 		printf(QUERY_IMG_MSG);
 		fflush(stdout);
 		scanf("%1024s",queryImage);

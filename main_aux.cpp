@@ -3,20 +3,20 @@
 #include <stdlib.h>
 
 int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
-	//
+	// Function variables
 	int i; // Generic loop variable
 	double distance, threshold;
 	double* distanceArray;
 	int** queryHist;
-	//
+	// Allocate memory
 	distanceArray = (double *)malloc(5 * sizeof(double));
  	queryHist = spGetRGBHist(queryImage,nBins);
 	if ((queryHist == NULL)or(distanceArray == NULL)) { // Memory allocation error
 		return 0;
 	}
-	//
+	// Save 5 closest hist into 'closestHist'
 	for (i=0;i<numberOfImages;i++) {
-		distance = spRGBHistL2Distance(queryHist, arrayHist[i], nBins);
+		distance = spRGBHistL2Distance(queryHist,arrayHist[i],nBins);
 		if (i<5) {
 			threshold = addBestMatch(distanceArray,closestHist,i,distance,i);
 		} else {
@@ -25,21 +25,25 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 			}
 		}
  	}
-	freeMemoryDynamic(distanceArray,1, 0, 0);
-	freeMemoryDynamic(queryHist,2, 3, 0);
+	// Free memory and return True (1)
+	freeMemoryDynamic(distanceArray,1,0,0);
+	freeMemoryDynamic(queryHist,2,3,0);
 	return 1;
  }
 
 int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift, int* nFeaturesPerImage) {
-	//
+	// Function variables
 	int i,j; // Generic loop variables
 	int queryNFeatures, max;
 	int* imageHitsArray;
 	int* bestMatches;
 	double** querySifts;
-	//
+	// Allocate memory
 	imageHitsArray = (int *)calloc(numberOfImages,sizeof(int));
-	//
+	if (imageHitsArray == NULL) { // Memory allocation error
+		return 0;
+	}
+	// Save 5 closest sift into 'closestSift'
 	querySifts = spGetSiftDescriptors(queryImage,maxNFeatures,&queryNFeatures);
 	for (i=0;i<queryNFeatures;i++) {
 		bestMatches = spBestSIFTL2SquaredDistance(5,querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
@@ -57,13 +61,14 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 		}
 		imageHitsArray[closestSift[i]] = 0;
 	}
+	// Free memory and return True (1)
 	freeMemoryDynamic(imageHitsArray,1, 0, 0);
 	freeMemoryDynamic(querySifts,2, maxNFeatures, 0);
 	return 1;
 }
 
 double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum) {
-	//
+	// Function variables
 	int tempI, i;
 	double tempD;
 	//
@@ -87,7 +92,9 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     int i,j;
     for(i=0;i<numberOfImages;i++) {
         for(j=0;j<3;j++) {
+        	if (arrayHist[i][j]) {
                 free(arrayHist[i][j]);
+        	}
         }
         for(j=0;j<maxNFeatures;j++) {
                 free(arraySift[i][j]);
@@ -107,7 +114,7 @@ void freeMemoryDynamic(void* data, int dim, int dim2length, int dim3length) {
 		if (data != NULL) {
 			free(data);
 		}
-	} else {  // Free 2D or 3D array
+	} else { // Free 2D or 3D array
 		for (i=0;i<dim2length;i++) {
 			if (((void**)data)[i] != NULL) {
 				freeMemoryDynamic(((void**)data)[i],dim-1,dim3length,0); // Free sub array of D2 or single block

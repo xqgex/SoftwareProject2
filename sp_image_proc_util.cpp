@@ -84,10 +84,12 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 
 	detect->detect(img, kp1, Mat()); // Detect Sifts
 	detect->compute(img, kp1, ds1); // Compute Sifts
-	if (true) { // TODO Check for minimum between sizeof(ds1) and maxNFeautres
-		*nFeatures = maxNFeautres; // TODO Store that value at *nFeatures
+	if (kp1.size() < maxNFeautres) {
+		*nFeatures = kp1.size();
+	} else {
+		*nFeatures = maxNFeautres;
 	}
-	for (i=0;i<maxNFeautres;i++) { // TODO change maxNFeautres
+	for (i=0;i<*nFeatures;i++) {
 		sif_Desc[i] = (double *) malloc(128 * sizeof(double)); // Memory allocation for each row
 		if (sif_Desc[i] == NULL) { // Memory allocation error
 			return NULL;

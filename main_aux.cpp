@@ -92,27 +92,43 @@ void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, i
     int i,j;
     for(i=0;i<numberOfImages;i++) {
         for(j=0;j<3;j++) {
-        	if (arrayHist[i][j]) {
+        	if (arrayHist[i][j]) { // A tiny chance for errors in some compilers
                 free(arrayHist[i][j]);
         	}
         }
         for(j=0;j<maxNFeatures;j++) {
+        	if (arrayHist[i][j]) { // A tiny chance for errors in some compilers
                 free(arraySift[i][j]);
+        	}
         }
-        free(arrayHist[i]);
-        free(arraySift[i]);
+        if (arrayHist[i]) { // A tiny chance for errors in some compilers
+        	free(arrayHist[i]);
+        }
+        if (arraySift[i]) { // A tiny chance for errors in some compilers
+        	free(arraySift[i]);
+        }
     }
-    free(arrayHist);
-    free(arraySift);
-    free(nFeaturesPerImage);
+    if (arrayHist) { // A tiny chance for errors in some compilers
+    	free(arrayHist);
+    	arrayHist = NULL; // Preventing a "double-free"
+    }
+    if (arraySift) { // A tiny chance for errors in some compilers
+    	free(arraySift);
+    	arraySift = NULL; // Preventing a "double-free"
+    }
+    if (nFeaturesPerImage) { // A tiny chance for errors in some compilers
+    	free(nFeaturesPerImage);
+    	nFeaturesPerImage = NULL; // Preventing a "double-free"
+    }
     return;
 }
 
 void freeMemoryDynamic(void* data, int dim, int dim2length, int dim3length) {
 	int i;
-	if (dim == 1) {// Single memory "block"
-		if (data != NULL) {
+	if (dim == 1) { // Single memory "block"
+		if (data) { // A tiny chance for errors in some compilers
 			free(data);
+			data = NULL; // Preventing a "double-free"
 		}
 	} else { // Free 2D or 3D array
 		for (i=0;i<dim2length;i++) {
@@ -122,7 +138,10 @@ void freeMemoryDynamic(void* data, int dim, int dim2length, int dim3length) {
 				break; // If we have a NULL pointer, the rest of the array is undefined, so we have to stop
 			}
 		}
-		free(data); // Free the array
+		if (data) { // A tiny chance for errors in some compilers
+			free(data); // Free the array
+			data = NULL; // Preventing a "double-free"
+		}
 	}
 }
 

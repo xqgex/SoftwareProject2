@@ -1,16 +1,17 @@
 #include "sp_image_proc_util.h"
 #include "main_aux.h"
-#include <cstdio>
-#include <iostream>
-#include <vector>
-#include <opencv2/core.hpp>//Mat
-#include <opencv2/features2d.hpp>
-#include <opencv2/highgui.hpp> //imshow, drawKeypoints, waitKey
-#include <opencv2/imgcodecs.hpp>//imread
-#include <opencv2/imgproc.hpp>//calcHist
-#include <opencv2/xfeatures2d.hpp>//SiftDescriptorExtractor
+#include <opencv2/highgui.hpp> // imread, CV_LOAD_IMAGE_COLOR, CV_LOAD_IMAGE_GRAYSCALE
+#include <opencv2/imgproc.hpp> // calcHist
+#include <opencv2/xfeatures2d.hpp> // SiftDescriptorExtractor
+//#include <cstdio> // TODO Is it necessary?
+//#include <iostream> // TODO Is it necessary?
+//#include <vector> // TODO Is it necessary?
+//#include <opencv2/core.hpp> // TODO Is it necessary?
+//#include <opencv2/features2d.hpp> // TODO Is it necessary?
+//#include <opencv2/imgcodecs.hpp> // TODO Is it necessary?
 
 using namespace cv;
+
 int** spGetRGBHist(char* str, int nBins) {
 	// Function variables
 	int i; // Generic loop variable
@@ -84,7 +85,7 @@ double** spGetSiftDescriptors(char* str, int maxNFeautres, int *nFeatures) {
 
 	detect->detect(img,kp1,Mat()); // Detect Sifts
 	detect->compute(img,kp1,ds1); // Compute Sifts
-	if (kp1.size() < maxNFeautres) {
+	if (kp1.size() < (unsigned int)maxNFeautres) {
 		*nFeatures = kp1.size();
 	} else {
 		*nFeatures = maxNFeautres;

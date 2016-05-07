@@ -1,6 +1,6 @@
 #include "main_aux.h"
 #include "sp_image_proc_util.h"
-#include <stdlib.h>
+#include <stdlib.h> // malloc, free, NULL
 
 int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryImage, int*** arrayHist) {
 	// Function variables
@@ -88,7 +88,6 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 }
 
 void freeMemory(int*** arrayHist, double*** arraySift, int* nFeaturesPerImage, int numberOfImages, int maxNFeatures) {
-	// FIXME Add a check that var is not NULL before trying to access him
     int i,j;
     for(i=0;i<numberOfImages;i++) {
         for(j=0;j<3;j++) {
@@ -144,5 +143,3 @@ void freeMemoryDynamic(void* data, int dim, int dim2length, int dim3length) {
 		}
 	}
 }
-
-

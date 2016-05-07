@@ -1,8 +1,8 @@
 #include "main_aux.h"
 #include "sp_image_proc_util.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> // printf, stdout, scanf, snprintf
+#include <stdlib.h> // malloc, EXIT_FAILURE, EXIT_SUCCESS
+#include <string.h> // strcmp
 
 #define IMGS_DIR_MSG "Enter images directory path:\n"
 #define IMGS_PREFIX_MSG "Enter images prefix:\n"

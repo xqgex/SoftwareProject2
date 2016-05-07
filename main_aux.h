@@ -14,8 +14,11 @@ int calcDistHist(int* retArray,int numberOfImages, int nBins, char* queryImage, 
 int calcDistSift(int* retArray,int numberOfImages, int maxNFeatures, char* queryImage, double*** arraySift,int* nFeaturesPerImage);
 
 /**
- *
- * Return
+ * distanceArray of imageArray are pair of arrays of distances and images respectively sorted by distances.
+ * distance and imageNum are pair of new elements to insert.
+ * Add the new elements to the arrays in place of the elements in the index 'insertionPoint'
+ * Keep the array's entries paired and the distances array sorted.
+ * Return the new threshold for the arrays (highest distance element).
  */
 double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, double distance, int imageNum);
 

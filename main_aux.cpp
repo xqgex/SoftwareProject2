@@ -17,9 +17,9 @@ int calcDistHist(int* closestHist, int numberOfImages, int nBins, char* queryIma
 	// Save 5 closest hist into 'closestHist'
 	for (i=0;i<numberOfImages;i++) {
 		distance = spRGBHistL2Distance(queryHist,arrayHist[i],nBins);
-		if (i<5) {
+		if (i<5) { // first 5 images
 			threshold = addBestMatch(distanceArray,closestHist,i,distance,i);
-		} else {
+		} else { // add new image if it has smaller distance then the current top 5
 			if (distance < threshold) {
 				threshold = addBestMatch(distanceArray,closestHist,4,distance,i);
 			}
@@ -39,18 +39,19 @@ int calcDistSift(int* closestSift, int numberOfImages, int maxNFeatures, char* q
 	int* bestMatches;
 	double** querySifts;
 	// Allocate memory
-	imageHitsArray = (int *)calloc(numberOfImages,sizeof(int));
+	imageHitsArray = (int *)calloc(numberOfImages,sizeof(int)); // Sift's hit counter
 	if (imageHitsArray == NULL) { // Memory allocation error
 		return 0;
 	}
 	// Save 5 closest sift into 'closestSift'
 	querySifts = spGetSiftDescriptors(queryImage,maxNFeatures,&queryNFeatures);
-	for (i=0;i<queryNFeatures;i++) {
+	for (i=0;i<queryNFeatures;i++) { // for each feature find the 5 closest features's image index
 		bestMatches = spBestSIFTL2SquaredDistance(5,querySifts[i],arraySift,numberOfImages,nFeaturesPerImage);
 		for (j=0;j<5;j++) {
-			imageHitsArray[bestMatches[j]]++;
+			imageHitsArray[bestMatches[j]]++; // update the hit counter
 		}
 	}
+	// find the index of 5 images with the most hits
 	for (i=0;i<5;i++) {
 		max = 0;
 		for (j=0;j<numberOfImages;j++) {
@@ -71,10 +72,11 @@ double addBestMatch(double* distanceArray, int* imageArray, int insertionPoint, 
 	// Function variables
 	int tempI, i;
 	double tempD;
-	//
+	// insert the new elements
 	i = insertionPoint - 1;
 	distanceArray[insertionPoint] = distance;
 	imageArray[insertionPoint] = imageNum;
+	// keep the arrays sorted by distance
 	while ((i>=0) and (distanceArray[i] > distance)) {
 		tempD = distanceArray[i+1];
 		distanceArray[i+1] = distanceArray[i];

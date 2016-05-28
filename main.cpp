@@ -19,7 +19,7 @@
 #define EXIT_MSG "Exiting...\n"
 #define ERROR_ALLOCATION_MSG "An error occurred - allocation failure\n"
 
-int main(int argc, char *argv[]) {
+int main() {
 	// Input variables
 	int numberOfImages,nBins,maxNFeatures;
 	char dir[1025],prefix[1025],suffix[1025],queryImage[1025],path[4097];
